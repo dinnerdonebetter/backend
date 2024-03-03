@@ -1,0 +1,24 @@
+{
+  "name": "@dinnerdonebetter/api-client",
+  "version": "0.0.141",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "lint": "eslint *.ts*",
+    "coverage": "npm run test -- --coverage",
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
+  },
+  "dependencies": {
+    "@types/string-format": "2.0.0",
+    "axios": "0.27.2",
+    "tsconfig": "*",
+    "@dinnerdonebetter/models": "*",
+    "@dinnerdonebetter/logger": "*",
+    "string-format": "2.0.0"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@dinnerdonebetter/mock-playwright-api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
+  },
+  "dependencies": {
+    "@dinnerdonebetter/models": "*"
+  }
+}

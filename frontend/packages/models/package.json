@@ -1,0 +1,16 @@
+{
+  "name": "@dinnerdonebetter/models",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "lint": "eslint *.ts*",
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
+  },
+  "dependencies": {
+    "date-fns": "2.29.3"
+  },
+  "devDependencies": {
+    "tsconfig": "*"
+  }
+}

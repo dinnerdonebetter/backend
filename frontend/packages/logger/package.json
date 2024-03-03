@@ -1,0 +1,14 @@
+{
+  "name": "@dinnerdonebetter/logger",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
+  },
+  "dependencies": {
+    "@dinnerdonebetter/models": "*",
+    "tsconfig": "*",
+    "tslog": "4.8.2"
+  }
+}

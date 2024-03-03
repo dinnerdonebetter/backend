@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  frontend:
+    container_name: frontend
+    environment:
+      USE_NOOP_LOGGER: 'nope'
+    ports:
+      - '7000:7000'
+      - '9000:9000'
+    build:
+      context: '../../../'
+      dockerfile: 'environments/webapp/testing/dockerfiles/frontend.Dockerfile'
+  webapp_tests:
+    container_name: webapp_tests
+    environment:
+      TARGET_ADDRESS: 'http://frontend:9000'
+    depends_on:
+      - frontend
+    links:
+      - frontend
+    build:
+      context: '../../'
+      dockerfile: 'environments/webapp/testing/dockerfiles/playwright.Dockerfile'
+    volumes:
+      - source: '../../test-results'
+        target: '/src/github.com/dinnerdonebetter/frontend/test-results'
+        type: 'bind'

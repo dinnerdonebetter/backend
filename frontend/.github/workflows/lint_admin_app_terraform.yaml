@@ -1,0 +1,36 @@
+on:
+  pull_request:
+    paths:
+      - environments/dev/admin/terraform/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: environments/dev/admin/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: environments/dev/admin/terraform
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: environments/dev/admin/terraform
+        id: validate
+        run: terraform validate -no-color

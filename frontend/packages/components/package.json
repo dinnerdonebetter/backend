@@ -1,0 +1,12 @@
+{
+  "name": "@dinnerdonebetter/components",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
+  },
+  "dependencies": {
+    "tsconfig": "*"
+  }
+}

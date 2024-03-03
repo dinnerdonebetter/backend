@@ -1,0 +1,17 @@
+{
+  "name": "@dinnerdonebetter/utils",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "lint": "eslint *.ts*",
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
+  },
+  "dependencies": {
+    "dagre": "0.8.5"
+  },
+  "devDependencies": {
+    "tsconfig": "*",
+    "@types/dagre": "0.7.48"
+  }
+}

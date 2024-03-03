@@ -1,0 +1,73 @@
+concurrency:
+  group: ${{ github.ref }}-deploy-webapp
+
+on: # [pull_request]
+  push:
+    branches:
+      - dev
+    paths:
+      - apps/web/**
+      - packages/**
+
+name: deploy webapp to dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Build Container
+        run: |
+          docker build --tag gcr.io/dinner-done-better-dev/webapp_server:${{ github.sha }} --build-arg SEGMENT_API_TOKEN=${{ secrets.DEV_SEGMENT_API_TOKEN }} --file apps/web/Dockerfile .
+          docker build --tag gcr.io/dinner-done-better-dev/webapp_server:latest --build-arg SEGMENT_API_TOKEN=${{ secrets.DEV_SEGMENT_API_TOKEN }} --file apps/web/Dockerfile .
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: environments/dev/webapp/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: environments/dev/webapp/terraform
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: environments/dev/webapp/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: environments/dev/webapp/terraform
+
+      - name: Push Container
+        run: |
+          docker push gcr.io/dinner-done-better-dev/webapp_server:${{  github.sha }}
+          docker push gcr.io/dinner-done-better-dev/webapp_server:latest
+
+      # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
+      - id: deploy-webapp-server
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: 'webapp-server'
+          project_id: 'dinner-done-better-dev'
+          image: 'gcr.io/dinner-done-better-dev/webapp_server'

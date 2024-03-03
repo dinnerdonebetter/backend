@@ -1,0 +1,40 @@
+on:
+  pull_request:
+    paths:
+      - apps/web/**
+      - packages/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['lts/*']
+    name: Webapp on ${{ matrix.node }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+
+      - run: npm install -g yarn
+      - run: yarn install
+
+      - run: yarn run build
+        working-directory: apps/web
+
+  container:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Webapp Container
+        run: |
+          docker build --tag gcr.io/dinner-done-better-dev/webapp_server:${{  github.sha }} --file apps/web/Dockerfile .
+          docker build --tag gcr.io/dinner-done-better-dev/webapp_server:latest --file apps/web/Dockerfile .
